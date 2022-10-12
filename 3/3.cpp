@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string_view>
 #include <string>
 
 std::string operator*(std::string a, int n) {
