@@ -3,6 +3,7 @@
 
 void truncateToDot(std::string& s) {
     s.resize(s.find('.'));
+    s.shrink_to_fit();
 }
 
 int main() {
