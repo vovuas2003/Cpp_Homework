@@ -110,11 +110,20 @@ int main()
             if (balls[i].position.y > height)
                 balls[i].position.y -= height;
             */
-
+            /*
             if (balls[i].position.x < 0 || balls[i].position.x > width)
                 balls[i].velocity.x *= -1;
             if (balls[i].position.y < 0 || balls[i].position.y > height)
                 balls[i].velocity.y *= -1;
+            */
+            if (balls[i].position.x - balls[i].radius < 0)
+                balls[i].velocity.x = fabs(balls[i].velocity.x);
+            if (balls[i].position.x + balls[i].radius > width)
+                balls[i].velocity.x = -1 * fabs(balls[i].velocity.x);
+            if (balls[i].position.y - balls[i].radius < 0)
+                balls[i].velocity.y = fabs(balls[i].velocity.y);
+            if (balls[i].position.y + balls[i].radius > height)
+                balls[i].velocity.y = -1 * fabs(balls[i].velocity.y);
 
             for(int myi = 0; myi < n_balls; myi++) {
                 for(int myj = 0; myj < n_balls; myj++) {
