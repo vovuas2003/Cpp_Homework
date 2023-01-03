@@ -1,8 +1,6 @@
 #include <iostream>
-#include <cmath>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
-
 
 class Slider
 {
@@ -17,6 +15,7 @@ private:
     sf::Font font;
     sf::Text text;
     int dlina;
+    int diff;
 public:
     Slider(sf::Vector2f position, int d, sf::Color color, int mi, int ma, float p) 
     {
@@ -46,23 +45,12 @@ public:
         if (mShape.getGlobalBounds().contains(mousePosition))
         {
             mIsDragged = true;
-            sf::Vector2f temp = {mousePosition.x - 25, mFON.getPosition().y - 25};
-            if (mousePosition.x < mFON.getPosition().x)
-                temp.x = mFON.getPosition().x - 25;
-            if (mousePosition.x > (mFON.getPosition().x + dlina))
-                temp.x = mFON.getPosition().x - 25 + dlina;
-            mShape.setPosition(temp);
-            percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
-            if (percent_value < 0)
-                percent_value = 0;
-            if (percent_value > 100)
-                percent_value = 100;
-            value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
-            text.setString(std::to_string(value));
+            diff = mousePosition.x - mShape.getPosition().x;
         }
         else if (mFON.getGlobalBounds().contains(mousePosition))
         {
             mIsDragged = true;
+            diff = 25;
             mShape.setPosition(sf::Vector2f{mousePosition.x - 25, mFON.getPosition().y - 25});
             percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
             value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
@@ -80,13 +68,13 @@ public:
     {
         if (mIsDragged)
         {
-            sf::Vector2f temp = {mousePosition.x - 25, mFON.getPosition().y - 25};
-            if (mousePosition.x < mFON.getPosition().x)
+            sf::Vector2f temp = {mousePosition.x - diff, mFON.getPosition().y - 25};
+            if (mousePosition.x - diff + 25 < mFON.getPosition().x)
                 temp.x = mFON.getPosition().x - 25;
-            if (mousePosition.x > (mFON.getPosition().x + dlina))
+            if (mousePosition.x - diff + 25 > (mFON.getPosition().x + dlina))
                 temp.x = mFON.getPosition().x - 25 + dlina;
             mShape.setPosition(temp);
-            percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
+            percent_value = ((mousePosition.x - diff + 25 - mFON.getPosition().x) * 100) / dlina;
             if (percent_value < 0)
                 percent_value = 0;
             if (percent_value > 100)
@@ -94,21 +82,6 @@ public:
             value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
             text.setString(std::to_string(value));
         }
-    }
-
-    void setColor(sf::Color c)
-    {
-        mShape.setFillColor(c);
-    }
-
-    void setSize(sf::Vector2f sz)
-    {
-        mShape.setSize(sz);
-    }
-
-    void setPosition(sf::Vector2f sz)
-    {
-        mShape.setSize(sz);
     }
     int get_value() {return value;}
     void draw(sf::RenderWindow& rw) const
@@ -142,9 +115,10 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if(event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) 
+            {
                 window.close();
-            
+            }
             if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
             {
                 sf::Vector2f mousePosition = window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y});
