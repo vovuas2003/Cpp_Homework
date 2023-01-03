@@ -4,41 +4,40 @@
 #include <SFML/Graphics.hpp>
 
 
-class Draggable
+class Slider
 {
 private:
     sf::RectangleShape mShape   {};
     sf::RectangleShape mFON   {};
     bool mIsDragged             {false};
-    int min_value {0};
-    int max_value {10};
-    float percent_value{0.0f};
+    int min_value;
+    int max_value;
+    float percent_value;
     int value;
     sf::Font font;
     sf::Text text;
-
+    int dlina;
 public:
-    Draggable() {};
-    Draggable(const sf::RectangleShape& shape) : mShape{shape} {}
-    Draggable(sf::Vector2f position, sf::Color color, int mi, int ma, float p) 
+    Slider(sf::Vector2f position, int d, sf::Color color, int mi, int ma, float p) 
     {
         mShape.setPosition(position - sf::Vector2f{25, 25});
         mFON.setPosition(position);
         mShape.setSize({50, 100});
-        mFON.setSize({500, 50});
+        mFON.setSize({d, 50});
+        dlina = d;
         mShape.setFillColor(color);
         mFON.setFillColor({200, 200, 200});
         min_value = mi;
         max_value = ma;
         percent_value = p;
-        value = (int) ((percent_value * max_value) / 100);
-        mShape.move({p * 5, 0});
+        value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
+        mShape.move({(p * d) / 100, 0});
         if (!font.loadFromFile("consola.ttf"))
 		std::cout << "Error loading font\n";
 	text.setFont(font);
 	text.setFillColor(color);
         text.setCharacterSize(30);
-	text.setPosition(position + sf::Vector2f{550, 0});
+	text.setPosition(position + sf::Vector2f{d + 50, 0});
 	text.setString(std::to_string(value));
     }
 
@@ -50,23 +49,23 @@ public:
             sf::Vector2f temp = {mousePosition.x - 25, mFON.getPosition().y - 25};
             if (mousePosition.x < mFON.getPosition().x)
                 temp.x = mFON.getPosition().x - 25;
-            if (mousePosition.x > (mFON.getPosition().x + 500))
-                temp.x = mFON.getPosition().x - 25 + 500;
+            if (mousePosition.x > (mFON.getPosition().x + dlina))
+                temp.x = mFON.getPosition().x - 25 + dlina;
             mShape.setPosition(temp);
-            percent_value = (mousePosition.x - mFON.getPosition().x) / 5;
+            percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
             if (percent_value < 0)
                 percent_value = 0;
             if (percent_value > 100)
                 percent_value = 100;
-            value = (int) ((percent_value * max_value) / 100);
+            value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
             text.setString(std::to_string(value));
         }
         else if (mFON.getGlobalBounds().contains(mousePosition))
         {
             mIsDragged = true;
             mShape.setPosition(sf::Vector2f{mousePosition.x - 25, mFON.getPosition().y - 25});
-            percent_value = (mousePosition.x - mFON.getPosition().x) / 5;
-            value = (int) ((percent_value * max_value) / 100);
+            percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
+            value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
             text.setString(std::to_string(value));
         }
         return mIsDragged;
@@ -84,15 +83,15 @@ public:
             sf::Vector2f temp = {mousePosition.x - 25, mFON.getPosition().y - 25};
             if (mousePosition.x < mFON.getPosition().x)
                 temp.x = mFON.getPosition().x - 25;
-            if (mousePosition.x > (mFON.getPosition().x + 500))
-                temp.x = mFON.getPosition().x - 25 + 500;
+            if (mousePosition.x > (mFON.getPosition().x + dlina))
+                temp.x = mFON.getPosition().x - 25 + dlina;
             mShape.setPosition(temp);
-            percent_value = (mousePosition.x - mFON.getPosition().x) / 5;
+            percent_value = ((mousePosition.x - mFON.getPosition().x) * 100) / dlina;
             if (percent_value < 0)
                 percent_value = 0;
             if (percent_value > 100)
                 percent_value = 100;
-            value = (int) ((percent_value * max_value) / 100);
+            value = (int) (min_value + ((percent_value * (max_value - min_value)) / 100));
             text.setString(std::to_string(value));
         }
     }
@@ -128,15 +127,15 @@ int main()
     window.setFramerateLimit(60);
 
 
-    Draggable ra {{50, 50}, sf::Color::White, 0, 100, 77};
-    Draggable r {{50, 200}, sf::Color::Red, 0, 255, 25};
-    Draggable g {{50, 350}, sf::Color::Green, 0, 255, 50};
-    Draggable b {{50, 500}, sf::Color::Blue, 0, 255, 75};
+    Slider ra {{50, 50}, 1000, sf::Color::White, 25, 100, 0};
+    Slider r {{50, 200}, 500, sf::Color::Red, 0, 255, 25};
+    Slider g {{50, 350}, 500, sf::Color::Green, 0, 255, 50};
+    Slider b {{50, 500}, 500, sf::Color::Blue, 0, 255, 75};
 
     sf::CircleShape circle(2 * ra.get_value());
     circle.setFillColor({r.get_value(), g.get_value(), b.get_value()});
     circle.setOrigin(2 * ra.get_value(), 2 * ra.get_value());
-    circle.setPosition(sf::Vector2f{1000, 325});
+    circle.setPosition(sf::Vector2f{1000, 375});
 
     while (window.isOpen())
     {
@@ -176,7 +175,7 @@ int main()
         circle.setRadius(2 * ra.get_value());
         circle.setFillColor({r.get_value(), g.get_value(), b.get_value()});
         circle.setOrigin(2 * ra.get_value(), 2 * ra.get_value());
-        circle.setPosition(sf::Vector2f{1000, 325});
+        circle.setPosition(sf::Vector2f{1000, 375});
         window.clear(sf::Color::Black);
         ra.draw(window);
         r.draw(window);
