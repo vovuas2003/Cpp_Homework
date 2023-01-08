@@ -63,6 +63,20 @@ public:
     void activate(Arkanoid& game); 
 };
 
+class IncBonus : public Bonus {
+public:
+    IncBonus(sf::Vector2f position): Bonus(position) {}; 
+    void draw(sf::RenderWindow& window) const;
+    void activate(Arkanoid& game); 
+};
+
+class DecBonus : public Bonus {
+public:
+    DecBonus(sf::Vector2f position): Bonus(position) {}; 
+    void draw(sf::RenderWindow& window) const;
+    void activate(Arkanoid& game); 
+};
+
 struct Brick
 {
     bool isActive;
@@ -396,7 +410,19 @@ private:
         int max_rand = 10000;
         if ((rand() % max_rand) * 1.0f / max_rand < m_bonusProbability) 
         {
-            m_bonuses.push_back(new TripleBonus(position));
+            int iii = rand() % 3;
+            switch(iii)
+            {
+                case 0:
+                    m_bonuses.push_back(new TripleBonus(position));
+                    break;
+                case 1:
+                    m_bonuses.push_back(new IncBonus(position));
+                    break;
+                case 2:
+                    m_bonuses.push_back(new DecBonus(position));
+                    break;
+            }
         }
     }
 
@@ -607,6 +633,8 @@ public:
     // Класс бонус должен быть дружественным, так как он может менять внутреннее состояние игры
     friend class Bonus;
     friend class TripleBonus;
+    friend class IncBonus;
+    friend class DecBonus;
 };
 
 
@@ -667,6 +695,34 @@ void TripleBonus::activate(Arkanoid& game)
     }
 }
 
+void IncBonus::draw(sf::RenderWindow& window) const
+{
+    static sf::CircleShape shape(radius);
+    shape.setOrigin(radius, radius);
+    shape.setFillColor(sf::Color::Green);
+    shape.setPosition(m_position);
+    window.draw(shape);
+}
+
+void IncBonus::activate(Arkanoid& game)
+{
+    game.m_paddle.size.x *= 1.25;
+}
+
+void DecBonus::draw(sf::RenderWindow& window) const
+{
+    static sf::CircleShape shape(radius);
+    shape.setOrigin(radius, radius);
+    shape.setFillColor(sf::Color::Red);
+    shape.setPosition(m_position);
+    window.draw(shape);
+}
+
+void DecBonus::activate(Arkanoid& game)
+{
+    game.m_paddle.size.x *= 0.75;
+}
+
 bool Bonus::isColiding(const Paddle& paddle) const
 {
     bool result = paddle.getBorder().intersects({m_position.x - radius, m_position.y - radius, 2 * radius, 2 * radius});
@@ -695,7 +751,7 @@ int main ()
     while (window.isOpen()) 
     {
         float dt = clock.restart().asSeconds();
-        std::cout << "FPS=" << static_cast<int>(1.0 / dt) << "\n"; 
+        //std::cout << "FPS=" << static_cast<int>(1.0 / dt) << "\n"; 
 
         // Обработка событий
         sf::Event event;
