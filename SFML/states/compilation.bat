@@ -1,0 +1,1 @@
+g++ main.cpp player.cpp player_states.cpp -I/SFML_build/include -L/SFML_build/lib -lsfml-graphics -lsfml-window -lsfml-system
