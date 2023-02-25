@@ -137,3 +137,33 @@ private:
     float mCurrentTime;
     static constexpr float kAttackTime = 0.5;
 };
+
+class SecondAttack : public PlayerState
+{
+public:
+    SecondAttack(Player* player);
+
+    void update(Player* player, float dt);
+    void handleEvents(Player* player, const sf::Event& event);
+    void hook(Player* player);
+    void startFalling(Player* player);
+    void hitGround(Player* player);
+private:
+    float mCurrentTime;
+    static constexpr float kAttackTime = 0.5;
+};
+
+class ThirdAttack : public PlayerState
+{
+public:
+    ThirdAttack(Player* player);
+
+    void update(Player* player, float dt);
+    void handleEvents(Player* player, const sf::Event& event);
+    void hook(Player* player);
+    void startFalling(Player* player);
+    void hitGround(Player* player);
+private:
+    float mCurrentTime;
+    static constexpr float kAttackTime = 0.6;
+};

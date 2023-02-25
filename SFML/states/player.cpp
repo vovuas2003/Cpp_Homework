@@ -57,12 +57,12 @@ void Player::update(float dt)
 void Player::draw(sf::RenderWindow& window)
 {
     window.draw(mSprite);
-
-    if (false) // For debuging
+    if (true) // For debuging
+    //if (false)
     {
         sf::RectangleShape shape {{mCollisionRect.width, mCollisionRect.height}};
         shape.setPosition(mPosition.x + mCollisionRect.left, mPosition.y + mCollisionRect.top);
-        shape.setFillColor(sf::Color(150, 50, 50, 50));
+        shape.setFillColor(sf::Color(150, 50, 50, 90));
         window.draw(shape);
 
         sf::CircleShape center {6};

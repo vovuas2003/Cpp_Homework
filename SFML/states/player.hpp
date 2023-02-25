@@ -31,8 +31,11 @@ public:
     friend class Hooked;
     friend class Sitting;
     friend class FirstAttack;
+    friend class SecondAttack;
+    friend class ThirdAttack;
 
     int djump = 0;
+    int nattack = 0;
 
 
 private:

@@ -408,7 +408,7 @@ Sitting::Sitting(Player* player) : PlayerState()
     mAnimation.addTextureRect({314, 6, 21, 30});
     mAnimation.addTextureRect({14, 43, 21, 30});
 
-    player->mCollisionRect =  player->mScaleFactor * sf::FloatRect(-10, -15, 20, 30);
+    player->mCollisionRect =  player->mScaleFactor * sf::FloatRect(-10, -8, 20, 23);
 
 
     cout << "Creating Sitting state" << endl;
@@ -456,7 +456,8 @@ void Sitting::hitGround(Player* player)
 
 FirstAttack::FirstAttack(Player* player) : PlayerState()
 {
-    player->mVelocity = {0, 0};
+    player->mVelocity.x *= 0.95;
+    player->nattack = 0;
     mAnimation = Animation(Animation::AnimationType::OneIteration);
     mAnimation.setAnimationSpeed(10);
     
@@ -481,7 +482,142 @@ void FirstAttack::hook(Player* player)
 
 void FirstAttack::update(Player* player, float dt)
 {
-    player->mVelocity = {0, 0};
+    player->mVelocity.x *= 0.95;
+    
+    mAnimation.update(dt);
+
+    mCurrentTime -= dt;
+    if (mCurrentTime < 0 && player->mIsColliding)
+    {
+        if (player->nattack == 0) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                player->setState(new Running(player));
+            else
+                player->setState(new Idle(player));
+            return;
+        } else {
+            player->setState(new SecondAttack(player));
+        }
+    }
+}
+
+void FirstAttack::handleEvents(Player* player, const sf::Event& event)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::X)
+        {
+            player->nattack = 1;
+        }
+    }
+}
+
+void FirstAttack::startFalling(Player* player)
+{
+    player->setState(new Falling(player));
+}
+
+void FirstAttack::hitGround(Player* player)
+{
+    //player->setState(new Idle(player));
+}
+
+SecondAttack::SecondAttack(Player* player) : PlayerState()
+{
+    player->mVelocity.x *= 0.95;
+    player->nattack = 0;
+    mAnimation = Animation(Animation::AnimationType::OneIteration);
+    mAnimation.setAnimationSpeed(10);
+
+    mAnimation.addTextureRect({  0, 258, 50, 45});
+    mAnimation.addTextureRect({ 50, 258, 50, 45});
+    mAnimation.addTextureRect({100, 258, 50, 45});
+    mAnimation.addTextureRect({150, 258, 50, 45});
+    
+    player->mCollisionRect =  player->mScaleFactor * sf::FloatRect(-10, -15, 20, 30);
+    
+    mCurrentTime = kAttackTime;
+
+
+    cout << "Creating SecondAttack state" << endl;
+}
+
+void SecondAttack::hook(Player* player)
+{
+}
+
+
+void SecondAttack::update(Player* player, float dt)
+{
+    player->mVelocity.x *= 0.95;
+    
+    mAnimation.update(dt);
+
+    mCurrentTime -= dt;
+    if (mCurrentTime < 0 && player->mIsColliding)
+    {
+        if (player->nattack == 0) {
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+                player->setState(new Running(player));
+            else
+                player->setState(new Idle(player));
+            return;
+        } else {
+            player->setState(new ThirdAttack(player));
+        }
+    }
+}
+
+void SecondAttack::handleEvents(Player* player, const sf::Event& event)
+{
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::X)
+        {
+            player->nattack = 1;
+        }
+    }
+}
+
+void SecondAttack::startFalling(Player* player)
+{
+    player->setState(new Falling(player));
+}
+
+void SecondAttack::hitGround(Player* player)
+{
+    //player->setState(new Idle(player));
+}
+
+ThirdAttack::ThirdAttack(Player* player) : PlayerState()
+{
+    player->mVelocity.x *= 0.95;
+    mAnimation = Animation(Animation::AnimationType::OneIteration);
+    mAnimation.setAnimationSpeed(10);
+    
+    mAnimation.addTextureRect({200, 258, 50, 45});
+    mAnimation.addTextureRect({250, 258, 50, 45});
+    mAnimation.addTextureRect({300, 258, 50, 45});
+    mAnimation.addTextureRect({  0, 295, 50, 45});
+    mAnimation.addTextureRect({ 50, 295, 50, 45});
+    mAnimation.addTextureRect({150, 295, 50, 45});
+    
+    player->mCollisionRect =  player->mScaleFactor * sf::FloatRect(-10, -15, 20, 30);
+    
+    mCurrentTime = kAttackTime;
+
+
+    cout << "Creating ThirdAttack state" << endl;
+}
+
+void ThirdAttack::hook(Player* player)
+{
+}
+
+
+void ThirdAttack::update(Player* player, float dt)
+{
+    player->mVelocity.x *= 0.95;
     
     mAnimation.update(dt);
 
@@ -496,16 +632,16 @@ void FirstAttack::update(Player* player, float dt)
     }
 }
 
-void FirstAttack::handleEvents(Player* player, const sf::Event& event)
+void ThirdAttack::handleEvents(Player* player, const sf::Event& event)
 {
 }
 
-void FirstAttack::startFalling(Player* player)
+void ThirdAttack::startFalling(Player* player)
 {
-    //player->setState(new Falling(player));
+    player->setState(new Falling(player));
 }
 
-void FirstAttack::hitGround(Player* player)
+void ThirdAttack::hitGround(Player* player)
 {
     //player->setState(new Idle(player));
 }
