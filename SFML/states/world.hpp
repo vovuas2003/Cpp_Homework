@@ -6,6 +6,7 @@
 #include <cmath>
 #include "player.hpp"
 #include "player_states.hpp"
+#include "block.hpp"
 
 
 
@@ -14,7 +15,7 @@ class World
 {
 public:
 
-    void addBlock(sf::FloatRect block)
+    void addBlock(my_block block)
     {
         mBlocks.push_back(block);
     }
@@ -53,11 +54,17 @@ public:
 
         window.setView(mView);
 
-        for (const sf::FloatRect& b : mBlocks)
+        for (const my_block& b : mBlocks)
         {
-            blockShape.setPosition(b.left, b.top);
-            blockShape.setSize({b.width, b.height});
+            if(b.isdestr) {
+                blockShape.setFillColor(sf::Color::Red);
+            }
+            blockShape.setPosition(b.mblock.left, b.mblock.top);
+            blockShape.setSize({b.mblock.width, b.mblock.height});
             window.draw(blockShape);
+            if(b.isdestr) {
+                blockShape.setFillColor(sf::Color(58, 69, 55));
+            }
         }
         mPlayer.draw(window);
     }
@@ -70,7 +77,7 @@ public:
 
 
 private:
-    std::vector<sf::FloatRect> mBlocks  {};
+    std::vector<my_block> mBlocks  {};
     Player mPlayer                      {{400, 400}};
     float mGravity                      {3600};
 

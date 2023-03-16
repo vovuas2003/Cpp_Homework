@@ -57,8 +57,8 @@ void Player::update(float dt)
 void Player::draw(sf::RenderWindow& window)
 {
     window.draw(mSprite);
-    if (true) // For debuging
-    //if (false)
+    //if (true) // For debuging
+    if (false)
     {
         sf::RectangleShape shape {{mCollisionRect.width, mCollisionRect.height}};
         shape.setPosition(mPosition.x + mCollisionRect.left, mPosition.y + mCollisionRect.top);
@@ -79,10 +79,10 @@ void Player::handleEvents(const sf::Event& event)
     mpState->handleEvents(this, event);
 }
 
-bool Player::handleCollision(const sf::FloatRect& rect)
+bool Player::handleCollision(const my_block& rectt)
 {
     sf::FloatRect playerRect = {mPosition.x + mCollisionRect.left, mPosition.y + mCollisionRect.top, mCollisionRect.width, mCollisionRect.height};
-
+    auto rect = rectt.mblock;
     float overlapx1 = playerRect.left + playerRect.width - rect.left;
     float overlapx2 = rect.left + rect.width - playerRect.left;
     float overlapy1 = playerRect.top + playerRect.height - rect.top;
@@ -132,14 +132,49 @@ bool Player::handleCollision(const sf::FloatRect& rect)
     return true;
 }
 
-void Player::handleAllCollisions(const std::vector<sf::FloatRect>& blocks)
+bool Player::my_handleCollision(const my_block& rectt)
+{
+    sf::FloatRect playerRect = {mPosition.x + mCollisionRect.left, mPosition.y + mCollisionRect.top, mCollisionRect.width, mCollisionRect.height};
+    auto rect = rectt.mblock;
+    float overlapx1 = playerRect.left + playerRect.width - rect.left;
+    float overlapx2 = rect.left + rect.width - playerRect.left;
+    float overlapy1 = playerRect.top + playerRect.height - rect.top;
+    float overlapy2 = rect.top + rect.height - playerRect.top;
+
+    if (overlapx1 < 0 || overlapx2 < 0 || overlapy1 < 0 || overlapy2 < 0)
+        return false;
+    return true;
+}
+
+void Player::handleAllCollisions(std::vector<my_block>& blocks)
 {
     mIsColliding = false;
-
-    for (const sf::FloatRect& block : blocks)
+    auto it = blocks.begin();
+    bool del;
+    sf::FloatRect ban;
+    while (it != blocks.end())
     {
-        if (handleCollision(block))
+        del = false;
+        if (handleCollision(*it)) {
             mIsColliding = true;
+        }
+
+        if(isattack && it->isdestr) {
+            ban = it->mblock;
+            ban.left -= 30;
+            ban.width += 60;
+            ban.top += 3;
+            ban.height -=3;
+            if(my_handleCollision(ban)) {
+                if((mIsFacedRight && (mPosition.x < it->mblock.left)) || (!mIsFacedRight && (mPosition.x > (it->mblock.left + it->mblock.width))))
+                    del = true;
+            }
+        }
+        
+        if(del)
+            it = blocks.erase(it);
+        else
+            it++;
     }
 
     if (!mIsColliding)

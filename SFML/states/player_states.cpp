@@ -59,6 +59,7 @@ sf::FloatRect operator*(float x, sf::FloatRect rect)
 Idle::Idle(Player* player) 
 {
     player->mVelocity = {0, 0};
+    player->isattack = 0;
     mAnimation = Animation();
     mAnimation.setAnimationSpeed(6);
     mAnimation.addTextureRect({ 14, 6, 21, 30});
@@ -130,6 +131,7 @@ void Idle::hitGround(Player* player)
 Running::Running(Player* player) : PlayerState()
 {
     mRunningSpeed = 900;
+    player->isattack = 0;
     mAnimation = Animation();
     mAnimation.setAnimationSpeed(12);
     mAnimation.addTextureRect({ 67, 45, 20, 27});
@@ -290,6 +292,7 @@ void Sliding::hitGround(Player* player)
 Falling::Falling(Player* player) : PlayerState()
 {
     mAnimation = Animation();
+    player->isattack = 0;
     mAnimation.setAnimationSpeed(12);
     mAnimation.addTextureRect({321, 155, 15, 26});
 
@@ -458,6 +461,7 @@ FirstAttack::FirstAttack(Player* player) : PlayerState()
 {
     player->mVelocity.x *= 0.95;
     player->nattack = 0;
+    player->isattack = 1;
     mAnimation = Animation(Animation::AnimationType::OneIteration);
     mAnimation.setAnimationSpeed(10);
     

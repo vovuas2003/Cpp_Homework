@@ -3,6 +3,7 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include "player_states.hpp"
+#include "block.hpp"
 
 class PlayerState;
 
@@ -18,8 +19,9 @@ public:
     void update(float dt);
     void draw(sf::RenderWindow& window);
     void handleEvents(const sf::Event& event);
-    bool handleCollision(const sf::FloatRect& rect);
-    void handleAllCollisions(const std::vector<sf::FloatRect>& blocks);
+    bool handleCollision(const my_block& rect);
+    bool my_handleCollision(const my_block& rect);
+    void handleAllCollisions(std::vector<my_block>& blocks);
 
     ~Player();
 
@@ -36,6 +38,7 @@ public:
 
     int djump = 0;
     int nattack = 0;
+    int isattack = 0;
 
 
 private:

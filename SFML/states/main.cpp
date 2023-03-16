@@ -24,17 +24,21 @@ int main()
     double dt = 1.0 / 60;
 
     World world;
-    world.addBlock({-500, 770, 20000, 400});
-    world.addBlock({-400, 100, 700, 300});
-    world.addBlock({600, 500, 300, 120});
-    world.addBlock({800, 0, 400, 200});
-    world.addBlock({-100, -700, 400, 100});
-    world.addBlock({700, -700, 400, 100});
-    world.addBlock({1500, -700, 400, 100});
-    world.addBlock({1100, -300, 400, 100});
-    world.addBlock({1100, 400, 400, 400});
-    world.addBlock({1900, -100, 200, 800});
-    world.addBlock({3000, 500, 1000, 200});
+    world.addBlock(sf::FloatRect{-500, 770, 20000, 400});
+    world.addBlock(sf::FloatRect{-400, 100, 700, 300});
+    world.addBlock(sf::FloatRect{600, 500, 300, 120});
+    world.addBlock(sf::FloatRect{800, 0, 400, 200});
+    world.addBlock(sf::FloatRect{-100, -700, 400, 100});
+    world.addBlock(sf::FloatRect{700, -700, 400, 100});
+
+    world.addBlock({sf::FloatRect{300, 400, 50, 370}, true});
+    
+    world.addBlock(sf::FloatRect{1500, -700, 400, 100});
+    world.addBlock(sf::FloatRect{1100, -300, 400, 100});
+    world.addBlock(sf::FloatRect{1100, 400, 400, 400});
+    world.addBlock(sf::FloatRect{1900, -100, 200, 800});
+    world.addBlock(sf::FloatRect{3000, 500, 1000, 200});
+
 
     while (window.isOpen()) 
     {
