@@ -52,7 +52,8 @@ T parallel_accumulate(Iterator first, Iterator last, T init)
 int main()
 {
     cout << "Generating numbers!" << endl;
-    std::vector<uint64_t> numbers(5e8);
+    //std::vector<uint64_t> numbers(5e8);
+    std::vector<uint64_t> numbers(2e8);
     numbers[0] = 123456789;
     for (size_t i = 1; i < numbers.size(); ++i)
     {
