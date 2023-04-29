@@ -13,8 +13,9 @@
 
 
 #include <functional>
+#include <future>
 
-#define DEBUG
+//#define DEBUG
 
 #include <iostream>
 #include <thread>
@@ -45,40 +46,18 @@ void parallelSort(int n, RandIt start, RandIt finish, Comparator comp) {
     if(n == 1) {
         std::sort(start, finish, comp);
     } else {
-        /*
-        https://stackoverflow.com/questions/19072808/using-stdpartition-with-quick-sort
-        */
-        if(start == finish) return; // >= ???
+        if(start == finish) return;
         auto pivot = *start;
-        RandIt middle = std::partition(start, finish, [pivot, comp](const auto& t){return comp(t, pivot);}); // [](RandIt::value_type t){}
+        RandIt middle = std::partition(start, finish, [pivot, comp](const auto& t){return comp(t, pivot);});
+        /*
         parallelSort(n / 2, start, middle, comp);
-        parallelSort(n - (n / 2), middle, finish, comp); // std::async with std::launch async
+        std::async(std::launch::async, parallelSort<RandIt, Comparator>, n - (n / 2), middle, finish, comp);
+        */
+        auto f = std::async(std::launch::async, parallelSort<RandIt, Comparator>, n / 2, start, middle, comp);
+        parallelSort(n - (n / 2), middle, finish, comp);
+        f.get();
     }
 }
-
-/*
-https://ru.wikibooks.org/wiki/%D0%A0%D0%B5%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8_%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D0%BE%D0%B2/%D0%A1%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0/%D0%91%D1%8B%D1%81%D1%82%D1%80%D0%B0%D1%8F
-template< typename BidirectionalIterator, typename Compare >
-void quick_sort( BidirectionalIterator first, BidirectionalIterator last, Compare cmp ) {
-   if( first != last ) {
-     BidirectionalIterator left  = first;
-     BidirectionalIterator right = last;
-     BidirectionalIterator pivot = left++;
-     while( left != right ) {
-       if( cmp( *left, *pivot ) ) {
-          ++left;
-       } else {
-          while( (left != --right) && cmp( *pivot, *right ) );
-          std::iter_swap( left, right );
-       }
-     }
-     --left;
-     std::iter_swap( first, left );
-     quick_sort( first, left, cmp );
-     quick_sort( right, last, cmp );
-   }
- }
-*/
 
 int main()
 {
@@ -107,7 +86,7 @@ int main()
     else cout << "OK!" << endl;
 #else
     cout << "Generating numbers!" << endl;
-    std::vector<uint64_t> numbers(2e8);
+    std::vector<uint64_t> numbers(2e7);
     numbers[0] = 123456789;
     for (size_t i = 1; i < numbers.size(); ++i)
     {
@@ -125,7 +104,7 @@ int main()
     else cout << "OK!" << endl;
     cout << endl;
     start = std::chrono::high_resolution_clock::now();
-    parallelSort(4, v.begin(), v.end(), [](int a, int b) {return a > b;});
+    parallelSort(8, v.begin(), v.end(), [](int a, int b) {return a > b;});
     end = std::chrono::high_resolution_clock::now();
     cout << "Time to parallel sort = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
          << " milliseconds." << endl;
