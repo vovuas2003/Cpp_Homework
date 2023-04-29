@@ -49,11 +49,11 @@ void parallelSort(int n, RandIt start, RandIt finish, Comparator comp) {
         https://stackoverflow.com/questions/19072808/using-stdpartition-with-quick-sort
         */
         if(start == finish) return; // >= ???
-        using T = std::iter_value_t<RandIt>;
-        T pivot = *start;
-        RandIt middle = std::partition(start, finish, [pivot](const T& t){return comp(t, pivot)}); // [](RandIt::value_type t){}
-        parallelSort(n / 2, start, middle);
-        parallelSort(n - (n / 2), middle + 1, finish); // std::async with std::launch async
+        auto pivot = *start;
+        RandIt middle = std::partition(start, finish, [pivot, comp](const auto& t){return comp(t, pivot);}); // [](RandIt::value_type t){}
+        parallelSort(n / 2, start, middle, comp);
+        parallelSort(n - (n / 2), middle, finish, comp); // std::async with std::launch async
+    }
 }
 
 /*
