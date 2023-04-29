@@ -45,16 +45,26 @@ template <typename RandIt, typename Comparator>
 void parallelSort(int n, RandIt start, RandIt finish, Comparator comp) {
     if(n == 1) {
         std::sort(start, finish, comp);
+        //cout << finish - start << endl;
     } else {
         if(start == finish) return;
         auto pivot = *start;
         RandIt middle = std::partition(start, finish, [pivot, comp](const auto& t){return comp(t, pivot);});
+        int nl = std::round((double)((middle - start) * n) / (finish - start));
+        if (nl == 0) {
+            nl = 1;
+        }
+        int nr = n - nl;
+        if (nr == 0) {
+            nr = 1;
+            nl--;
+        }
         /*
-        parallelSort(n / 2, start, middle, comp);
-        std::async(std::launch::async, parallelSort<RandIt, Comparator>, n - (n / 2), middle, finish, comp);
+        int nl = n / 2;
+        int nr = n - nl;
         */
-        auto f = std::async(std::launch::async, parallelSort<RandIt, Comparator>, n / 2, start, middle, comp);
-        parallelSort(n - (n / 2), middle, finish, comp);
+        auto f = std::async(std::launch::async, parallelSort<RandIt, Comparator>, nl, start, middle, comp);
+        parallelSort(nr, middle, finish, comp);
         f.get();
     }
 }
