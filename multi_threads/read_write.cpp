@@ -35,6 +35,7 @@ void write() {
             m.lock();
             if (s == "") {
                 m.unlock();
+                // sleep
             } else {
                 // s.toupper, cout << s
                 m.unlock();
