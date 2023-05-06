@@ -3,43 +3,54 @@
 #include <mutex>
 #include <string>
 #include <fstream>
+#include <chrono>
+#include <algorithm>
+using namespace std::chrono_literals;
 
 std::string s = "";
 std::mutex m;
 
 void read() {
-    ifstream fin;
-    fin.open("invisible_man.txt");
+    std::ifstream fin("invisible_man_1.txt");
     bool flag = true;
     while(flag) {
         while(true) {
             m.lock();
             if(s == "") {
-                getline(fin, s);
-                // if(EOF) flag = false
+                if(!getline(fin, s)) {
+                    flag = false;
+                    s = "THE_END";
+                }
                 m.unlock();
                 break;
             } else {
                 m.unlock();
-                // sleep
+                std::this_thread::sleep_for(1ms);
             }
         }
     }
-    // сообщить через глобальный флаг, защищённый другим мьютексом, функции write, что EOF
-    fin.close();
 }
 
 void write() {
-    while(1) {
+    bool flag = true;
+    while(flag) {
         while(1) {
             m.lock();
             if (s == "") {
                 m.unlock();
-                // sleep
+                std::this_thread::sleep_for(1ms);
             } else {
-                // s.toupper, cout << s
+                if(s == "THE_END") {
+                    flag = false;
+                    m.unlock();
+                    break;
+                }
+                std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+                std::cout << s << std::endl;
+                s = "";
                 m.unlock();
             }
+        }
     }
 }
 
