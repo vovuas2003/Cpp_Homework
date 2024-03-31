@@ -1,0 +1,4 @@
+Compile SFML lib (use CMake) into folder C:\SFML_build (for example)
+Compilation cmd command: g++ main.cpp -I/SFML_build/include -L/SFML_build/lib -lsfml-graphics -lsfml-window -lsfml-system
+Add C:\SFML_build\lib to path (win+R -> systempropertiesadvanced -> environmantal variables)
+or copy necessary dll files from C:\SFML_build\lib into folder with exe file to run it
